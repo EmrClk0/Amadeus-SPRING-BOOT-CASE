@@ -1,14 +1,16 @@
 package com.Amadeus.api.controller;
 
-import com.Amadeus.api.dto.HavaalanıDTO;
 import com.Amadeus.api.dto.UcusDTO;
-import com.Amadeus.service.HavaalanıService;
+import com.Amadeus.persistence.entity.Ucus;
 import com.Amadeus.service.UcusService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -55,6 +57,21 @@ public class UcusController {
         return this.ucusService.update(id,ucusDTO);
 
     }
+
+
+
+    @GetMapping("/search")
+    public HashMap<String, List<Ucus>> searchUcuslar(
+            @RequestParam("kalkisSehir") String kalkisSehir,
+            @RequestParam(value = "varisSehir") String varisSehir,
+            @RequestParam("kalkisTarih") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime kalkisTarih,
+            @RequestParam(value = "donusTarih", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime donusTarih) {
+
+        return this.ucusService.search(kalkisSehir,varisSehir,kalkisTarih,donusTarih);
+
+    }
+
+
 
 
 }

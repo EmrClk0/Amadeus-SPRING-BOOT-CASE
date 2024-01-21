@@ -54,7 +54,7 @@ public class HavaalanıController {
     @PutMapping("/update/{id}")
     public HavaalanıDTO updateHavaalanı(@PathVariable Long id, @RequestBody HavaalanıDTO havaalanıDTO) {
 
-        System.out.println("update controller");
+
         return this.havaalanıService.update(id,havaalanıDTO);
 
     }

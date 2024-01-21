@@ -8,11 +8,14 @@ import com.Amadeus.persistence.entity.Ucus;
 import com.Amadeus.persistence.repository.HavaalanıRepository;
 import com.Amadeus.persistence.repository.UcusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 @Service
@@ -54,13 +57,41 @@ public class UcusService {
         return savedDTO;
     }
 
+
+
+
+    public HashMap<String, List<Ucus>> search(String kalkisSehir, String varisSehir, LocalDateTime kalkisTarih,LocalDateTime donusTarih){
+        HashMap<String, List<Ucus>> hashMap= new HashMap<>();
+        Havaalanı kalkisHavaalani = this.havaalanıRepository.findBySehir(kalkisSehir).get(0);
+        Havaalanı varisHavaalanı = this.havaalanıRepository.findBySehir(varisSehir).get(0);
+        System.out.println("kalkıs id " + kalkisHavaalani.getId());
+        System.out.println("varıs id " + varisHavaalanı.getId());
+
+        List<Ucus> gidisUcuslar= this.ucusRepository.findSearched(kalkisHavaalani.getId(), varisHavaalanı.getId(),kalkisTarih);
+        hashMap.put("gidiş ucusları",gidisUcuslar);
+
+        if (donusTarih!=null){
+            //verildiyse çift yönlü uçuştur.
+            //çift yönlü uçuş için iki uçuş bilgisi verilmeli.
+            //gittiği yeri kalkıs oalrak alıcaz bu sefer
+            // başladığı yer hedef olacak
+            // dönüiş tarihi kalkıs tarihi
+
+            List<Ucus> donusUcus= this.ucusRepository.findSearched(varisHavaalanı.getId(), kalkisHavaalani.getId(),donusTarih);
+            hashMap.put("donus ucusları",donusUcus);
+        }
+
+        return hashMap;
+
+    }
+
     @Autowired
     private HavaalanıRepository havaalanıRepository;
     private Ucus DTOtoUcus(UcusDTO ucusDTO) {
 
         Ucus newUcus = new Ucus();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime kalkıs = LocalDateTime.parse(ucusDTO.getKalkısTarih(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime kalkıs = LocalDateTime.parse(ucusDTO.getKalkısTarih(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         newUcus.setKalkısTarih(kalkıs);
         LocalDateTime donus = LocalDateTime.parse(ucusDTO.getDönüsTarih(), formatter);
         newUcus.setDönüsTarih(donus);

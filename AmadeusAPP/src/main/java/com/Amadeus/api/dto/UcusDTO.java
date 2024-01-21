@@ -12,7 +12,7 @@ public class UcusDTO {
 
     private DateTimeFormatter formatter
             = DateTimeFormatter.ofPattern(
-            "yyyy-MM-dd HH:mm:ss");
+            "yyyy-MM-dd HH:mm");
 
     private String kalkısTarih;
     private String dönüsTarih;
